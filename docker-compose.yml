@@ -1,0 +1,48 @@
+# docker-compose.yml
+
+version: "3.8"
+
+services:
+  db:
+    image: mysql:5.7
+    container_name: db
+    command: --innodb-use-native-aio=0
+    platform: linux/amd64
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: yourpassword
+      MYSQL_DATABASE: testdb
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql:/var/lib/mysql
+    networks:
+      - app-network
+
+  nodeserver:
+    depends_on:
+      - db
+    build:
+      context: ./node
+    command: bash -c 'while !</dev/tcp/db/3306; do sleep 1; done; node index.js'
+    container_name: nodeserver
+    tty: true
+    volumes:
+      - /usr/src/app
+    # ports:
+    #   - "3000:3000" # Uncomment this line if you want to expose the port
+    networks:
+      - app-network
+
+  nginx:
+    restart: always
+    build:
+      context: ./nginx
+    ports:
+      - "80:80"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
