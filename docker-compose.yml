@@ -27,8 +27,8 @@ services:
     command: bash -c 'while !</dev/tcp/db/3306; do sleep 1; done; node index.js'
     container_name: nodeserver
     tty: true
-    volumes:
-      - /usr/src/app
+    volumes: 
+      - ./node:/usr/src/app
     # ports:
     #   - "3000:3000" # Uncomment this line if you want to expose the port
     networks:
