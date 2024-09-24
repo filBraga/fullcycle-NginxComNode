@@ -19,13 +19,19 @@ services:
       - ./mysql:/var/lib/mysql
     networks:
       - app-network
+    healthcheck:
+      test: mysqladmin ping -h 127.0.0.1 -u $$MYSQL_USER --password=$$MYSQL_ROOT_PASSWORD
+      start_period: 5s
+      interval: 5s
+      timeout: 5s
+      retries: 55
 
   nodeserver:
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     build:
       context: ./node
-    command: bash -c 'while !</dev/tcp/db/3306; do sleep 1; done; node index.js'
     container_name: nodeserver
     tty: true
     volumes:
