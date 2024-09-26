@@ -12,7 +12,6 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: yourpassword
       MYSQL_DATABASE: testdb
-      MYSQL_USER: root
     ports:
       - "3306:3306"
     volumes:
